@@ -1,0 +1,35 @@
+#strip out 7th page from a pdf
+import os
+import PyPDF2
+
+input_folder = os.path.expanduser("~/programming/original_pdfs")
+output_folder = os.path.join(input_folder, "modified_pdfs")
+os.makedirs(output_folder, exist_ok=True)
+
+for filename in os.listdir(input_folder):
+    if filename.endswith(".pdf"):
+        input_pdf_path = os.path.join(input_folder, filename)
+        output_pdf_path = os.path.join(output_folder, filename)
+        
+        # Read the input PDF file
+        with open(input_pdf_path, "rb") as input_file:
+            input_pdf = PyPDF2.PdfFileReader(input_file)
+            num_pages = input_pdf.getNumPages()
+
+            # Check if the PDF has at least 7 pages
+            if num_pages >= 7:
+                # Create a new PDF file without the 7th page
+                output_pdf = PyPDF2.PdfFileWriter()
+                for i in range(num_pages):
+                    if i != 6:  # Skip the 7th page (0-indexed)
+                        output_pdf.addPage(input_pdf.getPage(i))
+
+                # Write the output PDF file
+                with open(output_pdf_path, "wb") as output_file:
+                    output_pdf.write(output_file)
+
+                print(f"Modified {filename} and saved in {output_folder}")
+            else:
+                print(f"{filename} has less than 7 pages, skipping")
+
+print("All modifications completed.")
