@@ -1,0 +1,28 @@
+import requests
+import os
+
+# Create a folder to save the downloaded files
+output_folder = "star_battle_pdfs"
+os.makedirs(output_folder, exist_ok=True)
+
+# Base URL for the PDF files
+base_url = "https://krazydad.com/starbattle/sfiles/STAR_R2_10x10_v1_b"
+
+# Loop through the integers from 1 to 100
+for i in range(54, 101):
+    # Create the full URL for the current PDF file
+    pdf_url = f"{base_url}{i}.pdf"
+    
+    # Request the PDF file
+    response = requests.get(pdf_url)
+    
+    # Check if the request was successful
+    if response.status_code == 200:
+        # Save the PDF file to the output folder
+        with open(os.path.join(output_folder, f"STAR_R2_10x10_v1_b{i}.pdf"), "wb") as f:
+            f.write(response.content)
+        print(f"Downloaded PDF {i}")
+    else:
+        print(f"Failed to download PDF {i}")
+
+print("All downloads completed.")
