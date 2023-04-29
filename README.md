@@ -1,0 +1,2 @@
+# fun-scripts
+Various utilities
