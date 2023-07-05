@@ -1,0 +1,24 @@
+import random
+
+def roll_dice():
+    return random.randint(1, 6)
+
+def check_seven(a, b):
+    return a + b == 7
+
+num_trials = 1000000
+successes = 0
+
+for _ in range(num_trials):
+    dice = [roll_dice() for _ in range(4)]
+    # Create pairs in two ways (first two dice and last two dice, or first and third dice and second and fourth dice)
+    pair1a, pair1b = dice[0], dice[1]
+    pair2a, pair2b = dice[2], dice[3]
+    
+    pair3a, pair3b = dice[0], dice[2]
+    pair4a, pair4b = dice[1], dice[3]
+    
+    if check_seven(pair1a, pair1b) or check_seven(pair2a, pair2b) or check_seven(pair3a, pair3b) or check_seven(pair4a, pair4b):
+        successes += 1
+
+print(f"Probability of getting at least one sum of 7: {successes / num_trials}")
