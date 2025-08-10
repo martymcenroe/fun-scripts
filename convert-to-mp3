@@ -1,22 +1,37 @@
 #!/bin/zsh
 
 # This script finds all .mp4 files in the current directory
-# and all subdirectories, then converts them to high-quality MP3s.
+# and all subdirectories, then converts them to high-quality MP3s,
+# embedding the video's thumbnail as album art.
 
 for file in **/*.mp4(.); do
+  output_file="${file%.*}.mp3"
+
   # Check if the MP3 file already exists to avoid re-converting
-  if [[ ! -f "${file%.*}.mp3" ]]; then
+  if [[ ! -f "$output_file" ]]; then
     echo "Converting: $file"
-    # Execute ffmpeg command
-    # -i: input file
-    # -vn: no video, audio only
-    # -c:a libmp3lame: specify the mp3 codec
-    # -q:a 2: set VBR quality (2 is a great balance, ~192kbps)
-    ffmpeg -i "$file" -vn -c:a libmp3lame -q:a 2 "${file%.*}.mp3"
+
+    # Execute ffmpeg command with embedded album art
+    # -i "$file": Specifies the input video file.
+    # -vn: Discards the video stream for the final output.
+    # -c:a libmp3lame: Sets the audio codec to MP3.
+    # -q:a 2: Sets a high-quality variable bitrate (~192kbps).
+    # -map_metadata 0: Copies metadata (like title, artist) from the input.
+    # -map a: Selects only the audio stream for the output.
+    # -map v: Selects the video stream (for the thumbnail).
+    # -c:v copy: Copies the video stream without re-encoding it.
+    # -disposition:v:0 attached_pic: Sets the first video stream as attached album art.
+    ffmpeg -i "$file" \
+           -vn \
+           -c:a libmp3lame -q:a 2 \
+           -map_metadata 0 \
+           -map a -map v \
+           -c:v copy \
+           -disposition:v:0 attached_pic \
+           "$output_file"
   else
     echo "Skipping, MP3 already exists for: $file"
   fi
 done
 
 echo "\nConversion process complete."
-
