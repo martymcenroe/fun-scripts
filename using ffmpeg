@@ -1,0 +1,14 @@
+for file in **/*.mp4(.); do
+  # Check if the MP3 file already exists to avoid re-converting
+  if [[ ! -f "${file%.*}.mp3" ]]; then
+    echo "Converting: $file"
+    # Execute ffmpeg command
+    # -i: input file
+    # -vn: no video, audio only
+    # -c:a libmp3lame: specify the mp3 codec
+    # -q:a 2: set VBR quality (0 is highest, ~320kbps)
+    ffmpeg -i "$file" -vn -c:a libmp3lame -q:a 0 "${file%.*}.mp3"
+  else
+    echo "Skipping, MP3 already exists for: $file"
+  fi
+done
